@@ -4,18 +4,17 @@ import "./App.css";
   
 function App() { 
     const canvasRef = useRef(null); 
-    const ctxRef = useRef(null); 
     const [isDrawing, setIsDrawing] = useState(false); 
-    const [lineWidth, setLineWidth] = useState(5); 
     const [lineColor, setLineColor] = useState("#ff0000"); 
-    const [lineOpacity, setLineOpacity] = useState(0.1); 
     const [lastPress, setLastPress] = useState(null);
+    const [mousePosition, setMousePosition] = useState(null);
     const [nodes, setNodes] = useState([]);
-    const NODE_SIZE = 10 
+    const NODE_SIZE = 10; 
   
     // Initialization when the component 
     // mounts for the first time 
     useEffect(() => { 
+        console.log('useEffect triggered');
         const canvas = canvasRef.current; 
         const ctx = canvas.getContext("2d"); 
 
@@ -26,19 +25,33 @@ function App() {
         nodes.forEach(node => {
             ctx.beginPath();
             ctx.arc(node[0], node[1], NODE_SIZE, 0, 2 * Math.PI);
-            ctx.fillStyle = 'black';
-            ctx.fill();
+            ctx.strokeStyle = lineColor; // Set the stroke color
+            ctx.lineWidth = 1; // Set the line width
+            ctx.stroke();
             ctx.closePath();
           });
-    }, [nodes]); 
+
+        // Draw a line from the last node
+        if (lastPress !== null && mousePosition !== null){
+            ctx.beginPath();
+            ctx.moveTo(lastPress[0], lastPress[1]);
+            ctx.lineTo(mousePosition[0], mousePosition[1]);
+            ctx.strokeStyle = lineColor; // Set the stroke color
+            ctx.lineWidth = 1; // Set the line width
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+    }, [nodes, mousePosition]); 
   
-    // Function for starting the drawing 
-    const startDrawing = (e) => { 
+    const mouseDown = (e) => { 
         const x = e.nativeEvent.offsetX;
         const y = e.nativeEvent.offsetY;
         setLastPress([x, y]);
+        setIsDrawing(true);
+
         console.log(lastPress);
-        console.log(nodes)
+        console.log(nodes);
 
         // Check if there is a circle at the clicked position
         const existingNodeIndex = nodes.findIndex(node => {
@@ -58,38 +71,29 @@ function App() {
           }
     }; 
   
+    const mouseMove = (e) => { 
+        console.log('mouseMoved');
+        if (!isDrawing) { 
+            return; 
+        } 
+        setMousePosition([e.nativeEvent.offsetX, e.nativeEvent.offsetY])
+    }; 
+
     //Function for ending the drawing 
-    const endDrawing = () => { 
+    const mouseUp = () => { 
         // ctxRef.current.closePath(); 
         // setIsDrawing(false); 
     }; 
   
-    const draw = (e) => { 
-        // if (!isDrawing) { 
-        //     return; 
-        // } 
-        // ctxRef.current.lineTo( 
-        //     e.nativeEvent.offsetX, 
-        //     e.nativeEvent.offsetY 
-        // ); 
-  
-        // ctxRef.current.stroke(); 
-    }; 
-  
     return ( 
         <div className="App"> 
-            <h1>Paint App</h1> 
+            <h1>Radpath</h1> 
+            <Menu setLineColor={setLineColor} lineColor={lineColor} /> 
             <div className="draw-area"> 
-                <Menu 
-                    setLineColor={setLineColor} 
-                    setLineWidth={setLineWidth} 
-                    setLineOpacity={setLineOpacity} 
-                    lineColor={lineColor}
-                /> 
                 <canvas 
-                    onMouseDown={startDrawing} 
-                    onMouseUp={endDrawing} 
-                    onMouseMove={draw} 
+                    onMouseDown={mouseDown} 
+                    onMouseUp={mouseUp} 
+                    onMouseMove={mouseMove} 
                     ref={canvasRef} 
                     width={`1280px`} 
                     height={`720px`} 
