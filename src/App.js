@@ -7,7 +7,7 @@ function App() {
     const ctxRef = useRef(null); 
     const [isDrawing, setIsDrawing] = useState(false); 
     const [lineWidth, setLineWidth] = useState(5); 
-    const [lineColor, setLineColor] = useState("black"); 
+    const [lineColor, setLineColor] = useState("#ff0000"); 
     const [lineOpacity, setLineOpacity] = useState(0.1); 
   
     // Initialization when the component 
@@ -59,6 +59,7 @@ function App() {
                     setLineColor={setLineColor} 
                     setLineWidth={setLineWidth} 
                     setLineOpacity={setLineOpacity} 
+                    lineColor={lineColor}
                 /> 
                 <canvas 
                     onMouseDown={startDrawing} 

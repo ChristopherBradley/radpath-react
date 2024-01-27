@@ -4,12 +4,13 @@ import React from "react";
 import "../App.css"; 
   
 const Menu = ({ setLineColor, setLineWidth, 
-    setLineOpacity }) => { 
+    setLineOpacity, lineColor }) => { 
     return ( 
         <div className="Menu"> 
             <label>Brush Color </label> 
             <input 
                 type="color"
+                value={lineColor}
                 onChange={(e) => { 
                     setLineColor(e.target.value); 
                 }} 
