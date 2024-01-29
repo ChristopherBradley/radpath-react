@@ -2,6 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import Menu from "./components/Menu"; 
 import "./App.css"; 
   
+const NODE_SIZE = 10; 
+
+const findExistingNode = (x, y, nodes) => {
+    return nodes.findIndex(node => {
+        const [nx, ny] = node;
+        const distance = Math.sqrt((x - nx) ** 2 + (y - ny) ** 2);
+        return distance < NODE_SIZE;
+    });
+}
+
 function App() { 
     const canvasRef = useRef(null); 
     const [isDrawing, setIsDrawing] = useState(false); 
@@ -9,12 +19,10 @@ function App() {
     const [lastPress, setLastPress] = useState(null);
     const [mousePosition, setMousePosition] = useState(null);
     const [nodes, setNodes] = useState([]);
-    const NODE_SIZE = 10; 
+    const [newNode, setNewNode] = useState(false)
+    const [edges, setEdges] = useState([]);
   
-    // Initialization when the component 
-    // mounts for the first time 
     useEffect(() => { 
-        console.log('useEffect triggered');
         const canvas = canvasRef.current; 
         const ctx = canvas.getContext("2d"); 
 
@@ -42,49 +50,77 @@ function App() {
             ctx.closePath();
         }
 
-    }, [nodes, mousePosition]); 
+    }, [nodes, mousePosition]);  // useEffect runs whenever these variables get changed
   
     const mouseDown = (e) => { 
         const x = e.nativeEvent.offsetX;
         const y = e.nativeEvent.offsetY;
-        setLastPress([x, y]);
+
+        // Check if there is a node at the clicked position
+        const existingNodeIndex = findExistingNode(x, y, nodes);
+
+        // Draw a new node if no node exists at the clicked position
+        if (existingNodeIndex === -1) {
+            setNewNode(true);
+            setLastPress([x, y]);
+            setNodes([...nodes, [x, y]]);
+
+        // Center the coordinates if a node already exists at the clicked position
+        } else {
+            setNewNode(false);
+            setLastPress(nodes[existingNodeIndex]);
+        }
         setIsDrawing(true);
-
-        console.log(lastPress);
-        console.log(nodes);
-
-        // Check if there is a circle at the clicked position
-        const existingNodeIndex = nodes.findIndex(node => {
-            const [nx, ny] = node;
-            const distance = Math.sqrt((x - nx) ** 2 + (y - ny) ** 2);
-            return distance < NODE_SIZE;
-        });
-
-        if (existingNodeIndex !== -1) {
-            // If a circle exists at the clicked position, remove it
-            const newNodes = [...nodes];
-            newNodes.splice(existingNodeIndex, 1);
-            setNodes(newNodes);
-          } else {
-            // Draw a new circle if no circle exists at the clicked position
-            setNodes(prevNodes => [...prevNodes, [x, y]]);
-          }
     }; 
   
     const mouseMove = (e) => { 
-        console.log('mouseMoved');
         if (!isDrawing) { 
             return; 
         } 
         setMousePosition([e.nativeEvent.offsetX, e.nativeEvent.offsetY])
     }; 
 
-    //Function for ending the drawing 
-    const mouseUp = () => { 
-        // ctxRef.current.closePath(); 
-        // setIsDrawing(false); 
+    const mouseUp = (e) => { 
+        const x = e.nativeEvent.offsetX;
+        const y = e.nativeEvent.offsetY;
+        const node1 = lastPress;
+        const existingNodeIndex = findExistingNode(x, y, nodes);
+        const node2 = (existingNodeIndex !== -1) ? nodes[existingNodeIndex] : [x, y];
+
+        // Clear the last press and mouse position to stop drawing a new edge
+        setLastPress(null);
+        setMousePosition(null);
+
+        // MouseDown and MouseUp on the same node
+        if (node1[0] == node2[0] && node1[1] == node2[1]) {
+            // Placing an unconnected new node
+            if (newNode){
+                return;
+            }
+            // Ignoring a node connected by an edge (must delete the edges first)
+            console.log("bla")
+
+            // Removing an existing node
+            nodes.splice(existingNodeIndex, 1);
+            return;
+        }
+
+        // Placing a new node connected by an edge
+        if (existingNodeIndex === -1){
+            setNodes([...nodes, node2]);
+        } 
+
+        // TODO: Placing a new edge 
+        const edge = [node1,node2]
+        const reverse_edge = [node2, node1]
+
+        // TODO: Removing an existing edge 
+
+
+
+        console.log("nodes", nodes)
     }; 
-  
+    
     return ( 
         <div className="App"> 
             <h1>Radpath</h1> 
@@ -101,6 +137,7 @@ function App() {
             </div> 
         </div> 
     ); 
-} 
+
+}
   
 export default App;
