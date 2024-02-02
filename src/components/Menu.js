@@ -8,9 +8,14 @@ const Menu = ({ edges }) => {
         <div className="Menu"> 
             <button
                 onClick={() => { 
-                    // Using fetch to fetch the api from 
-                    // flask server it will be redirected to proxy
-                    fetch("/data?foo=5")
+                    // This fetch goes to the proxy address which is set in package.json
+                    fetch("/data", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // Set content type to JSON
+                        },
+                        body: JSON.stringify({ foo: 3 }), // Send data in the request body
+                    })
                         .then((res) => {
                             if (!res.ok) {
                                 throw new Error(`HTTP error! Status: ${res.status}`);
@@ -18,7 +23,6 @@ const Menu = ({ edges }) => {
                             return res.json();
                         })
                         .then((data) => {
-                            // Setting data from the API
                             console.log(data);
                         })
                         .catch((error) => {
