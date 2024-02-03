@@ -3,7 +3,7 @@
 import React from "react"; 
 import "../App.css"; 
   
-const Menu = ({ edges }) => { 
+const Menu = ({ edges, setPath, setColours}) => { 
     return ( 
         <div className="Menu"> 
             <button
@@ -23,7 +23,9 @@ const Menu = ({ edges }) => {
                             return res.json();
                         })
                         .then((data) => {
-                            console.log(data);
+                            console.log("results", data)
+                            setPath(data["path"]);
+                            setColours(data["colours"]);
                         })
                         .catch((error) => {
                             console.error("Fetch error:", error);

@@ -8,12 +8,14 @@ const NODE_SIZE = 10;
 function App() { 
     const canvasRef = useRef(null); 
     const [isDrawing, setIsDrawing] = useState(false); 
-    const [lineColor, setLineColor] = useState("#ff0000"); 
     const [lastPress, setLastPress] = useState(null);
     const [mousePosition, setMousePosition] = useState(null);
     const [nodes, setNodes] = useState([]);
     const [newNode, setNewNode] = useState(false)
     const [edges, setEdges] = useState([]);
+    const [path, setPath] = useState([]);
+    const [colours, setColours] = useState([]);
+
   
     useEffect(() => { 
         const canvas = canvasRef.current; 
@@ -26,7 +28,6 @@ function App() {
         nodes.forEach(node => {
             ctx.beginPath();
             ctx.arc(node[0], node[1], NODE_SIZE, 0, 2 * Math.PI);
-            ctx.strokeStyle = lineColor;
             ctx.lineWidth = 1;
             ctx.stroke();
             ctx.closePath();
@@ -37,7 +38,6 @@ function App() {
             ctx.beginPath();
             ctx.moveTo(lastPress[0], lastPress[1]);
             ctx.lineTo(mousePosition[0], mousePosition[1]);
-            ctx.strokeStyle = lineColor;
             ctx.lineWidth = 1;
             ctx.stroke();
             ctx.closePath();
@@ -48,13 +48,45 @@ function App() {
             ctx.beginPath();
             ctx.moveTo(edge[0][0], edge[0][1]);
             ctx.lineTo(edge[1][0], edge[1][1]);
-            ctx.strokeStyle = lineColor;
             ctx.lineWidth = 1;
             ctx.stroke();
             ctx.closePath();
         });
 
-    }, [nodes, mousePosition, edges]);  // useEffect runs whenever these variables get changed
+        // Draw the path
+        const usedEdges = new Set();
+        path.forEach(edge => {
+            // Find the gradient perpendicular to the edge to draw a coloured line slightly left of center
+            const gradient = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
+            const unitVector = [gradient[0] / Math.hypot(...gradient), gradient[1] / Math.hypot(...gradient)];
+            
+            // Use the right hand side if the left hand side is already taken
+            const rotationMatrix = usedEdges.has(JSON.stringify(edge)) ? [[0, -1], [1, 0]] : [[0, 1], [-1, 0]];
+            const newVector = [
+                rotationMatrix[0][0] * unitVector[0] + rotationMatrix[0][1] * unitVector[1],
+                rotationMatrix[1][0] * unitVector[0] + rotationMatrix[1][1] * unitVector[1]
+              ];
+
+            // Distance away from the center to draw the coloured line
+            const dist = 3;
+            const xChange = dist * newVector[0];
+            const yChange = dist * newVector[1];
+            const x1 = edge[0][0] + xChange
+            const y1 = edge[0][1] + yChange
+            const x2 = edge[1][0] + xChange
+            const y2 = edge[1][1] + yChange
+    
+            // Draw this segment of the path
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#00FF00";
+            ctx.stroke();
+            ctx.closePath();
+        });
+
+    }, [nodes, mousePosition, edges, path]);  // useEffect runs whenever these variables get changed
     
   
     const mouseDown = (e) => { 
@@ -128,7 +160,7 @@ function App() {
     return ( 
         <div className="App"> 
             <h1>Radpath</h1> 
-            <Menu edges={edges}> </Menu>
+            <Menu edges={edges} setPath={setPath} setColours={setColours}> </Menu>
             <div className="draw-area"> 
                 <canvas 
                     onMouseDown={mouseDown} 
