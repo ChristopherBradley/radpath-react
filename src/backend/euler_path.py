@@ -1,8 +1,6 @@
 import networkx as nx
 import numpy as np
 from scipy.spatial.distance import cosine
-from functools import reduce
-import operator
 
 def euler_path(edges, double_edges):
     """Create a route through the graph that is easy to follow and avoids turning back on itself"""

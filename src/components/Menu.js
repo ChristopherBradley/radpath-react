@@ -12,9 +12,9 @@ const Menu = ({ edges }) => {
                     fetch("/data", {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json', // Set content type to JSON
+                            'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ foo: 3 }), // Send data in the request body
+                        body: JSON.stringify({ "edges": edges }),
                     })
                         .then((res) => {
                             if (!res.ok) {
