@@ -4,6 +4,9 @@ from scipy.spatial.distance import cosine
 
 def euler_path(edges, double_edges):
     """Create a route through the graph that is easy to follow and avoids turning back on itself"""
+    if len(edges) == 0:
+        return [], []
+
     graph = create_multi_graph(edges, double_edges)
     last_edge = list(graph.edges)[0]
     ordered_edges = [last_edge[:2]]
@@ -108,3 +111,23 @@ def create_multi_graph(edges, double_edges):
     for edge in double_edges:
         graph.add_edge(edge[0], edge[1])
     return graph
+
+if __name__ == '__main__':
+    ## Route that requires double edges
+    # edges = [[(244, 313), (309, 421)], [(309, 421), (420, 359)], [(420, 359), (244, 313)], [(244, 313), (350, 237)],
+    #          [(350, 237), (420, 359)], [(350, 237), (557, 134)]]
+    # double_edges = [((244, 313), (420, 359)), ((350, 237), (557, 134))]
+    # path, colours = euler_path(edges, double_edges)
+
+    ## Route with no double edges
+    # edges = [[(704, 288), (518, 266)], [(518, 266), (675, 173)], [(675, 173), (704, 288)]]
+    # double_edges = []
+    # path, colours = euler_path(edges, double_edges)
+
+    ## No route
+    edges = []
+    double_edges = []
+    path, colours = euler_path(edges, double_edges)
+
+    print("path", path)
+    print("colours", colours)

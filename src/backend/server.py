@@ -10,12 +10,13 @@ def get_time():
     print("Route /data called")
     data = request.json
     edges = data.get("edges")
-    print("edges:", edges)
-    print("edges type: ", type(edges))
+    edge_tuples = [[tuple(node) for node in edge] for edge in edges]
+    print("edge_tuples", edge_tuples)
 
-    edges_array = np.array(edges)
-    double_edges = choose_double_edges(edges_array)
-    path, colours = euler_path(edges, double_edges)
+    double_edges = choose_double_edges(edge_tuples)
+    print("double_edges", double_edges)
+    
+    path, colours = euler_path(edge_tuples, double_edges)
     results = {
         "path":path, 
         "colours":colours,

@@ -91,7 +91,15 @@ def expand_edges(graph_augmented, graph_original):
     return double_edges
 
 if __name__ == '__main__':
-    edges = [[(244, 313), (309, 421)], [(309, 421), (420, 359)], [(420, 359), (244, 313)], [(244, 313), (350, 237)],
-             [(350, 237), (420, 359)], [(350, 237), (557, 134)]]
+    ## Route that requires double edges
+    # edges = [[(244, 313), (309, 421)], [(309, 421), (420, 359)], [(420, 359), (244, 313)], [(244, 313), (350, 237)],
+    #          [(350, 237), (420, 359)], [(350, 237), (557, 134)]]
+
+    ## Route with no double edges
+    # edges = [[(704, 288), (518, 266)], [(518, 266), (675, 173)], [(675, 173), (704, 288)]]
+
+    ## No route
+    edges = []
+
     double_edges = choose_double_edges(edges)
-    print(double_edges)
+    print("double_edges", double_edges)
