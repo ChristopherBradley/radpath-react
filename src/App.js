@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react"; 
-import Menu from "./components/Menu"; 
 import "./App.css"; 
 
 
@@ -166,12 +165,59 @@ function App() {
             edges.splice(existingEdgeIndex, 1);
         }
     }; 
+
+    const uploadBasemap = (e) => { 
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const img = new Image();
+                img.onload = function () {
+                    setBasemap(img);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    const generatePath = () => {
+        // This fetch goes to the proxy address which is set in package.json
+        fetch("/data", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "edges": edges }),
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((data) => {
+                console.log("results", data)
+                setPath(data["path"]);
+                setColours(data["colours"]);
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
     
     return ( 
         <div className="App"> 
-            <h1>Radpath</h1> 
-            <Menu edges={edges} setPath={setPath} setColours={setColours} setBasemap={setBasemap}> </Menu>
-            <div className="draw-area"> 
+            <div className="title-and-menu">
+                <div className="left-menu"> 
+                    <input type="file" accept="image/*" onChange={uploadBasemap} />
+                    <button className="button"
+                        onClick={generatePath}
+                    > Generate Path </button> 
+                </div>                 
+                <h1>Radpath</h1> 
+            </div>
+            <div className="canvas"> 
                 <canvas 
                     onMouseDown={mouseDown} 
                     onMouseUp={mouseUp} 
@@ -185,6 +231,10 @@ function App() {
     ); 
 
 }
+
+////////////////////////////
+// Extra helper functions //
+////////////////////////////
 
 const findExistingNode = (x, y, nodes) => {
     return nodes.findIndex(node => {

@@ -11,17 +11,33 @@
     align-items: center; 
     background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%); 
 } 
-  
+
+.title-and-menu {
+    width: 98%; 
+    display: flex;
+    flex-direction: row; /* Stack the elements horizontally */
+    }
+
+.left-menu {
+    display: flex;
+    flex-direction: column; /* Stack the elements vertically */
+  }
+
+.button {
+    width: 120px; 
+}
+
 h1 { 
     font-size: 50px; 
     margin-top: 0; 
-    margin-bottom: 5px; 
+    margin-bottom: 0px; 
     color: #ff8400; 
+    align-items: center; 
 } 
   
-.draw-area { 
-    width: 1280px; 
-    height: 720px; 
+.canvas { 
+    width: 98%; 
+    height: 100%; 
     border: 2px solid #808080; 
     position: relative; 
     background-color: white; 
