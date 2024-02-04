@@ -3,9 +3,22 @@
 import React from "react"; 
 import "../App.css"; 
   
-const Menu = ({ edges, setPath, setColours}) => { 
+const Menu = ({ edges, setPath, setColours, setBasemap}) => { 
     return ( 
         <div className="Menu"> 
+            <input type="file" accept="image/*" onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const img = new Image();
+                        img.onload = function () {
+                            setBasemap(img);
+                        };
+                        img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }}} />
             <button
                 onClick={() => { 
                     // This fetch goes to the proxy address which is set in package.json

@@ -1,13 +1,8 @@
 import { useEffect, useRef, useState } from "react"; 
 import Menu from "./components/Menu"; 
 import "./App.css"; 
-  
-// red, orange, yellow, light green, dark green, light blue, dark blue, violet, magenta, pink
-// with a dark version and light version of each
-// const PATH_COLOURS = ["#c40034", "#f7786d", "#ffaa0d", "#deb968", "#ffeb0d", "#ded468", // Red, Orange, Yellow
-//                       "#60d40d", "#b7ff78", "#00ab25", "#7ef295", "#00fff7", "#60bfb9", // Light green, dark green, light blue
-//                       "#001fbd", "#829cfa", "#9000ff", "#c379fc", "#4b0085", "#925cbf", // Dark blue, violet, magenta
-//                       "#fb00ff", "#fd96ff"]; // pink
+
+
 const PATH_COLOURS = ["#c40034",  "#ffaa0d",  "#ffeb0d", "#60d40d",  "#00ab25",  "#00fff7", "#001fbd",  "#9000ff",  "#4b0085", "#fb00ff", // Red, Orange, Yellow, Light green, Dark green, Light blue, Dark blue, Violet, Magenta, Pink
                       "#f7786d", "#deb968", "#f5fc88", "#b7ff78", "#7ef295", "#85dede", "#829cfa", "#c379fc", "#925cbf", "#fd96ff", // Lighter versions
                      ]; 
@@ -16,6 +11,7 @@ const NODE_SIZE = 10;
 
 function App() { 
     const canvasRef = useRef(null); 
+    const [baseMap, setBasemap] = useState(null);
     const [isDrawing, setIsDrawing] = useState(false); 
     const [lastPress, setLastPress] = useState(null);
     const [mousePosition, setMousePosition] = useState(null);
@@ -24,7 +20,6 @@ function App() {
     const [edges, setEdges] = useState([]);
     const [path, setPath] = useState([]);
     const [colours, setColours] = useState([]);
-
   
     useEffect(() => { 
         const canvas = canvasRef.current; 
@@ -33,6 +28,11 @@ function App() {
         // Clear the entire canvas before redrawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = "#000000";
+
+        // Draw the background image
+        if (baseMap) {
+            ctx.drawImage(baseMap, 0, 0, canvas.width, canvas.height);
+        }
 
         // Draw the nodes
         nodes.forEach(node => {
@@ -97,8 +97,7 @@ function App() {
             ctx.closePath();
         });
 
-    }, [nodes, mousePosition, edges, path]);  // useEffect runs whenever these variables get changed
-    
+    }, [nodes, mousePosition, edges, path, baseMap]);  // useEffect runs whenever these variables get changed
   
     const mouseDown = (e) => { 
         const x = e.nativeEvent.offsetX;
@@ -171,7 +170,7 @@ function App() {
     return ( 
         <div className="App"> 
             <h1>Radpath</h1> 
-            <Menu edges={edges} setPath={setPath} setColours={setColours}> </Menu>
+            <Menu edges={edges} setPath={setPath} setColours={setColours} setBasemap={setBasemap}> </Menu>
             <div className="draw-area"> 
                 <canvas 
                     onMouseDown={mouseDown} 
