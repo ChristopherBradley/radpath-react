@@ -2,6 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import Menu from "./components/Menu"; 
 import "./App.css"; 
   
+// red, orange, yellow, light green, dark green, light blue, dark blue, violet, magenta, pink
+// with a dark version and light version of each
+// const PATH_COLOURS = ["#c40034", "#f7786d", "#ffaa0d", "#deb968", "#ffeb0d", "#ded468", // Red, Orange, Yellow
+//                       "#60d40d", "#b7ff78", "#00ab25", "#7ef295", "#00fff7", "#60bfb9", // Light green, dark green, light blue
+//                       "#001fbd", "#829cfa", "#9000ff", "#c379fc", "#4b0085", "#925cbf", // Dark blue, violet, magenta
+//                       "#fb00ff", "#fd96ff"]; // pink
+const PATH_COLOURS = ["#c40034",  "#ffaa0d",  "#ffeb0d", "#60d40d",  "#00ab25",  "#00fff7", "#001fbd",  "#9000ff",  "#4b0085", "#fb00ff", // Red, Orange, Yellow, Light green, Dark green, Light blue, Dark blue, Violet, Magenta, Pink
+                      "#f7786d", "#deb968", "#f5fc88", "#b7ff78", "#7ef295", "#85dede", "#829cfa", "#c379fc", "#925cbf", "#fd96ff", // Lighter versions
+                     ]; 
 const NODE_SIZE = 10; 
 
 
@@ -23,6 +32,7 @@ function App() {
 
         // Clear the entire canvas before redrawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#000000";
 
         // Draw the nodes
         nodes.forEach(node => {
@@ -55,20 +65,21 @@ function App() {
 
         // Draw the path
         const usedEdges = new Set();
-        path.forEach(edge => {
+        path.forEach((edge, index) => {
             // Find the gradient perpendicular to the edge to draw a coloured line slightly left of center
             const gradient = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
             const unitVector = [gradient[0] / Math.hypot(...gradient), gradient[1] / Math.hypot(...gradient)];
             
             // Use the right hand side if the left hand side is already taken
             const rotationMatrix = usedEdges.has(JSON.stringify(edge)) ? [[0, -1], [1, 0]] : [[0, 1], [-1, 0]];
+            usedEdges.add(JSON.stringify(edge));
             const newVector = [
                 rotationMatrix[0][0] * unitVector[0] + rotationMatrix[0][1] * unitVector[1],
                 rotationMatrix[1][0] * unitVector[0] + rotationMatrix[1][1] * unitVector[1]
               ];
 
             // Distance away from the center to draw the coloured line
-            const dist = 3;
+            const dist = 4;
             const xChange = dist * newVector[0];
             const yChange = dist * newVector[1];
             const x1 = edge[0][0] + xChange
@@ -80,8 +91,8 @@ function App() {
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "#00FF00";
+            ctx.lineWidth = dist;
+            ctx.strokeStyle = PATH_COLOURS[colours[index]];
             ctx.stroke();
             ctx.closePath();
         });
