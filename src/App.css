@@ -13,14 +13,22 @@
 } 
 
 .title-and-menu {
-    width: 98%; 
+    margin-top: 10px; 
+    margin-left: 10px; 
+    margin-right: 10px; 
     display: flex;
     flex-direction: row; /* Stack the elements horizontally */
-    }
+    align-items: center;
+    justify-content: center;
+    /* background-color: lightblue; */
+}
 
 .left-menu {
+    position: absolute;
+    left: 20px;
     display: flex;
     flex-direction: column; /* Stack the elements vertically */
+    justify-content: flex-start;
   }
 
 .button {
@@ -29,10 +37,8 @@
 
 h1 { 
     font-size: 50px; 
-    margin-top: 0; 
-    margin-bottom: 0px; 
+    margin: 0;
     color: #ff8400; 
-    align-items: center; 
 } 
   
 .canvas { 
@@ -41,4 +47,5 @@ h1 {
     border: 2px solid #808080; 
     position: relative; 
     background-color: white; 
+    margin-bottom: 10px; 
 } 
