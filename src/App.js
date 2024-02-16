@@ -10,8 +10,8 @@ const NODE_SIZE = 10;
 
 function App() { 
     const canvasRef = useRef(null); 
-    const [canvasWidth, setCanvasWidth] = useState(1280);
-    const [canvasHeight, setCanvasHeight] = useState(720);
+    const [canvasWidth, setCanvasWidth] = useState(null);
+    const [canvasHeight, setCanvasHeight] = useState(null);
     const [baseMap, setBasemap] = useState(null);
     const [baseMapWidth, setBaseMapWidth] = useState(null);
     const [baseMapHeight, setBaseMapHeight] = useState(null);
@@ -32,8 +32,8 @@ function App() {
         setCanvasHeight(canvas.height);
         const handleResize = () => {
             const { clientWidth, clientHeight } = document.documentElement;
-            setCanvasWidth(clientWidth);
-            setCanvasHeight(clientHeight);
+            setCanvasWidth(clientWidth * 0.98);
+            setCanvasHeight(clientHeight * 0.9);
         };
         handleResize();
         window.addEventListener('resize', handleResize);
