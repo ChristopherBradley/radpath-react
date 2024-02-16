@@ -206,6 +206,9 @@ function App() {
             };
             reader.readAsDataURL(file);
         }
+        setNodes([])
+        setEdges([])
+        setPath([])
     }
 
     const generatePath = () => {
@@ -225,6 +228,10 @@ function App() {
             })
             .then((data) => {
                 console.log("results", data)
+                if(data["path"] === null){
+                    console.log("ERROR: Graph is disjoint");
+                    return;
+                }
                 setPath(data["path"]);
                 setColours(data["colours"]);
             })
