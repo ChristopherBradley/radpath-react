@@ -10,7 +10,11 @@ const NODE_SIZE = 10;
 
 function App() { 
     const canvasRef = useRef(null); 
+    const [canvasWidth, setCanvasWidth] = useState(1280);
+    const [canvasHeight, setCanvasHeight] = useState(720);
     const [baseMap, setBasemap] = useState(null);
+    const [baseMapWidth, setBaseMapWidth] = useState(null);
+    const [baseMapHeight, setBaseMapHeight] = useState(null);
     const [isDrawing, setIsDrawing] = useState(false); 
     const [lastPress, setLastPress] = useState(null);
     const [mousePosition, setMousePosition] = useState(null);
@@ -24,13 +28,22 @@ function App() {
         const canvas = canvasRef.current; 
         const ctx = canvas.getContext("2d"); 
 
+        setCanvasWidth(canvas.width);
+        setCanvasHeight(canvas.height);
+        const handleResize = () => {
+            const { clientWidth, clientHeight } = document.documentElement;
+            setCanvasWidth(clientWidth);
+            setCanvasHeight(clientHeight);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
         // Clear the entire canvas before redrawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = "#000000";
 
-        // Draw the background image
         if (baseMap) {
-            ctx.drawImage(baseMap, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(baseMap, 0, 0, baseMapWidth, baseMapHeight);
         }
 
         // Draw the nodes
@@ -139,7 +152,7 @@ function App() {
         setMousePosition(null);
 
         // MouseDown and MouseUp on the same node
-        if (node1[0] == node2[0] && node1[1] == node2[1]) {
+        if (node1[0] === node2[0] && node1[1] === node2[1]) {
             // Placing an unconnected new node
             if (newNode){
                 return;
@@ -174,6 +187,20 @@ function App() {
                 const img = new Image();
                 img.onload = function () {
                     setBasemap(img);
+                    const baseMapDimensions = img.width / img.height
+                    const canvasDimensions = canvasWidth / canvasHeight
+                    // Set the width and height to be as large as possible while maintaing dimensions and staying in the canvas
+                    if (baseMapDimensions > canvasDimensions) {
+                        // Width is the limiting factor
+                        const scaledHeight = (canvasWidth / img.width) * img.height;
+                        setBaseMapWidth(canvasWidth);
+                        setBaseMapHeight(scaledHeight);
+                    } else {
+                        // Height is the limiting factor
+                        const scaledWidth = (canvasHeight / img.height) * img.width;
+                        setBaseMapWidth(scaledWidth);
+                        setBaseMapHeight(canvasHeight);
+                    }
                 };
                 img.src = event.target.result;
             };
@@ -223,8 +250,8 @@ function App() {
                     onMouseUp={mouseUp} 
                     onMouseMove={mouseMove} 
                     ref={canvasRef} 
-                    width={`1280px`} 
-                    height={`720px`} 
+                    width={canvasWidth} 
+                    height={canvasHeight} 
                 /> 
             </div> 
         </div> 
@@ -247,16 +274,16 @@ const findExistingNode = (x, y, nodes) => {
 const findExistingEdge = (node1, node2, edges) => {
     return edges.findIndex(edge => {
         return (
-            (edge[0][0] == node1[0] && edge[0][1] == node1[1] &&
-             edge[1][0] == node2[0] && edge[1][1] == node2[1]) ||
-            (edge[0][0] == node2[0] && edge[0][1] == node2[1] &&
-             edge[1][0] == node1[0] && edge[1][1] == node1[1])
+            (edge[0][0] === node1[0] && edge[0][1] === node1[1] &&
+             edge[1][0] === node2[0] && edge[1][1] === node2[1]) ||
+            (edge[0][0] === node2[0] && edge[0][1] === node2[1] &&
+             edge[1][0] === node1[0] && edge[1][1] === node1[1])
         );
     });
 };
 
 const isNodeInEdges = (node, edges) => {
-    return edges.some(edge => edge.some(edgeNode => edgeNode[0] == node[0] && edgeNode[1] == node[1]));
+    return edges.some(edge => edge.some(edgeNode => edgeNode[0] === node[0] && edgeNode[1] === node[1]));
 };
   
 export default App;
