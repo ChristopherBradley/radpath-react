@@ -1,6 +1,5 @@
 import networkx as nx
 import numpy as np
-from scipy.spatial.distance import cosine
 
 def euler_path(edges, double_edges):
     """Create a route through the graph that is easy to follow and avoids turning back on itself"""
@@ -98,10 +97,20 @@ def choose_next_node(last_edge, possibilities):
     """Choose the node that is most in a straight line"""
     current_gradient = np.array(last_edge[0]) - np.array(last_edge[1])
     possible_gradients = np.array(last_edge[1]) - possibilities
-    similarities = [cosine(current_gradient, p) for p in possible_gradients]
+    similarities = [cosine_distance(current_gradient, p) for p in possible_gradients]
     node_index = np.argmin(similarities)
     next_node = possibilities[node_index]
     return next_node
+
+# Reproducing scipy.spatial.distance.cosine with numpy to avoid an extra dependency
+def cosine_similarity(a, b):
+    dot_product = np.dot(a, b)
+    norm_a = np.linalg.norm(a)
+    norm_b = np.linalg.norm(b)
+    return dot_product / (norm_a * norm_b)
+
+def cosine_distance(a, b):
+    return 1 - cosine_similarity(a, b)
 
 def create_multi_graph(edges, double_edges):
     """Combine the single and double edges into a graph"""
