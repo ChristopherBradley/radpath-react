@@ -213,7 +213,10 @@ function App() {
 
     const generatePath = () => {
         // This fetch goes to the proxy address which is set in package.json
-        fetch("/data", {
+        // const api_url = "/data"   // local flask backend
+        const api_url = "https://woizh3x78g.execute-api.ap-southeast-2.amazonaws.com/test/helloworld"   // AWS Lambda & API Gateway backend
+
+        fetch(api_url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -1,5 +1,4 @@
 from flask import Flask, request
-import numpy as np
 from double_edges import choose_double_edges
 from euler_path import euler_path
 
