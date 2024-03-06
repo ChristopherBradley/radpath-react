@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react"; 
 import "./App.css"; 
 
+// const API_URL = "/data"   // local flask backend proxy address is set in package.json
+const API_URL = "https://woizh3x78g.execute-api.ap-southeast-2.amazonaws.com/test/helloworld"   // AWS Lambda & API Gateway backend
 
 const PATH_COLOURS = ["#c40034",  "#ffaa0d",  "#ffeb0d", "#60d40d",  "#00ab25",  "#00fff7", "#001fbd",  "#9000ff",  "#4b0085", "#fb00ff", // Red, Orange, Yellow, Light green, Dark green, Light blue, Dark blue, Violet, Magenta, Pink
                       "#f7786d", "#deb968", "#f5fc88", "#b7ff78", "#7ef295", "#85dede", "#829cfa", "#c379fc", "#925cbf", "#fd96ff", // Lighter versions
@@ -212,11 +214,7 @@ function App() {
     }
 
     const generatePath = () => {
-        // This fetch goes to the proxy address which is set in package.json
-        // const api_url = "/data"   // local flask backend
-        const api_url = "https://woizh3x78g.execute-api.ap-southeast-2.amazonaws.com/test/helloworld"   // AWS Lambda & API Gateway backend
-
-        fetch(api_url, {
+        fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
